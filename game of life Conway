@@ -1,0 +1,56 @@
+def get_generation(cells: list, generations: int):
+    """cells - двумерный массив, где 0 - это мертвая клетка,
+     а 1 - это живая клетка. generations - номер искомого
+     поколения, нам дано нулевое поколение"""
+    if not sum([sum(row) for row in cells]):  # Выводим [[]], если в массиве сумма всех чисел - 0
+        return [[]]
+    if not generations:
+        return cells
+    helper = [[0 for _ in range(len(cells[j]))] for j in range(len(cells))]
+    for i in range(len(cells)):  # Идём построчно
+        for j in range(len(cells[i])):  # Идём по элементам в строчке
+            if not i:  # Если это первая строка
+                summa_up = 0
+                if not j:  # Если это первый элемент в строке
+                    summa_cur = cells[i][j + 1]
+                    summa_down = cells[i + 1][j] + cells[i + 1][j + 1]
+                elif j == len(cells[i]) - 1:  # Если это последний элемент в строке
+                    summa_cur = cells[i][j-1]
+                    summa_down = cells[i + 1][j-1] + cells[i + 1][j]
+                else:  # Если это не крайний элемент в строке
+                    summa_cur = cells[i][j - 1] + cells[i][j + 1]
+                    summa_down = cells[i + 1][j - 1] + cells[i + 1][j] + cells[i + 1][j + 1]
+            elif i == len(cells) - 1:  # Если это последняя строка
+                summa_down = 0
+                if not j:  # Если это первый элемент в строке
+                    summa_up = cells[i - 1][j] + cells[i - 1][j + 1]
+                    summa_cur = cells[i][j + 1]
+                elif j == len(cells[i]) - 1:  # Если это последний элемент в строке
+                    summa_up = cells[i - 1][j-1] + cells[i - 1][j]
+                    summa_cur = cells[i][j-1]
+                else:  # Если это не крайний элемент в строке
+                    summa_up = cells[i - 1][j - 1] + cells[i - 1][j] + cells[i - 1][j + 1]
+                    summa_cur = cells[i][j - 1] + cells[i][j + 1]
+            elif not j:  # Если это первый элемент в строке
+                summa_up =  cells[i - 1][j] + cells[i - 1][j + 1]
+                summa_cur = cells[i][j + 1]
+                summa_down = cells[i + 1][j] + cells[i + 1][j + 1]
+            elif j == len(cells[i]) - 1:  # Если это последний элемент в строке
+                summa_up = cells[i - 1][j - 1] + cells[i - 1][j]
+                summa_cur = cells[i][j - 1]
+                summa_down = cells[i + 1][j - 1] + cells[i + 1][j]
+            else:  # Не крайняя строка и не крайний элемент
+                summa_up = cells[i-1][j-1] + cells[i-1][j] + cells[i-1][j+1]
+                summa_cur = cells[i][j-1] + cells[i][j+1]
+                summa_down = cells[i+1][j-1] + cells[i+1][j] + cells[i+1][j+1]
+            summa = summa_up + summa_cur + summa_down
+            if cells[i][j]:
+                if summa == 2 or summa == 3:
+                    helper[i][j] = 1
+                else:
+                    helper[i][j] = 0
+            elif summa == 3:
+                helper[i][j] = 1
+            else:
+                helper[i][j] = 0
+    return(get_generation(helper, generations - 1))
